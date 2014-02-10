@@ -8,7 +8,7 @@ import nzgo.toolkit.core.naming.NameSpace;
 import nzgo.toolkit.core.pipeline.Module;
 import nzgo.toolkit.core.taxonomy.Rank;
 import nzgo.toolkit.core.taxonomy.Taxa;
-import nzgo.toolkit.core.taxonomy.TaxaSort;
+import nzgo.toolkit.core.taxonomy.TaxaAssignment;
 import nzgo.toolkit.core.taxonomy.Taxon;
 import nzgo.toolkit.core.taxonomy.parser.EFetchStAXParser;
 
@@ -18,17 +18,17 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * TaxonomySorter
+ * Taxonomy Assignment
  * @author Walter Xie
  */
-public class TaxonomySorter extends Module{
+public class TaxonomyAssignment extends Module{
 
-    public TaxonomySorter() {
-        super("TaxonomySorter", NZGOToolkit.TOOLKIT[1]);
+    public TaxonomyAssignment() {
+        super("TaxonomyAssignment", NZGOToolkit.TOOLKIT[1]);
     }
 
 
-    private TaxonomySorter(Path inputFile, Path outFile, Path errorOutFile, Rank rankToBreak, String regexPrefix, String taxIdNCBI) {
+    private TaxonomyAssignment(Path inputFile, Path outFile, Path errorOutFile, Rank rankToBreak, String regexPrefix, String taxIdNCBI) {
         super();
 
         Taxa taxa = null;
@@ -51,11 +51,11 @@ public class TaxonomySorter extends Module{
             }
         }
 
-        TaxaSort taxaSort = new TaxaSort(taxa, rankToBreak, regexPrefix, bioClass);
+        TaxaAssignment taxaAssignment = new TaxaAssignment(taxa, rankToBreak, regexPrefix, bioClass);
 
         Map<String, String> taxaSortMap = null;
         try {
-            taxaSortMap = taxaSort.getTaxaSortMap();
+            taxaSortMap = taxaAssignment.getTaxaAssignementMap();
         } catch (IOException | XMLStreamException e) {
             e.printStackTrace();
         }
@@ -72,7 +72,7 @@ public class TaxonomySorter extends Module{
 
         if (errorOutFile != null) {
             try {
-                ConfigFileIO.writeConfigMap(errorOutFile, taxaSort.getErrors(), "errors");
+                ConfigFileIO.writeConfigMap(errorOutFile, taxaAssignment.getErrors(), "errors");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -90,7 +90,7 @@ public class TaxonomySorter extends Module{
 
     // main
     public static void main(String[] args) {
-        Module module = new TaxonomySorter();
+        Module module = new TaxonomyAssignment();
 
         Arguments.Option[] newOptions = new Arguments.Option[]{
                 new Arguments.StringOption("out", "output-file-name", "Output file name (*.tsv), " +
@@ -134,6 +134,6 @@ public class TaxonomySorter extends Module{
         String regex_prefix = arguments.getStringOption("regex_prefix");
 
         // traits Map
-        new TaxonomySorter(inputFile, outFile, errorOutFile, rankToBreak, regex_prefix, taxIdNCBI);
+        new TaxonomyAssignment(inputFile, outFile, errorOutFile, rankToBreak, regex_prefix, taxIdNCBI);
     }
 }
